@@ -26,6 +26,7 @@ let stats = {
 };
 
 document.addEventListener("DOMContentLoaded", () => {
+    loadSettings();
     loadStats();
     initGame();
     setupKeyboard();
@@ -110,6 +111,7 @@ function setupEventListeners() {
 
     document.getElementById("stats-btn").addEventListener("click", showStats);
     document.getElementById("help-btn").addEventListener("click", showHelp);
+    document.getElementById("theme-btn").addEventListener("click", toggleTheme);
 
     document.querySelectorAll(".close-btn").forEach(btn => {
         btn.addEventListener("click", () => {
@@ -290,6 +292,19 @@ function updateStats(won) {
         stats.currentStreak = 0;
     }
     localStorage.setItem("wordle-fr-stats", JSON.stringify(stats));
+}
+
+function loadSettings() {
+    const isLightMode = localStorage.getItem("wordle-fr-light-mode") === "true";
+    if (isLightMode) {
+        document.body.classList.add("light-mode");
+    }
+}
+
+function toggleTheme() {
+    document.body.classList.toggle("light-mode");
+    const isLightMode = document.body.classList.contains("light-mode");
+    localStorage.setItem("wordle-fr-light-mode", isLightMode);
 }
 
 function showStats() {

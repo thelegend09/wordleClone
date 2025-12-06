@@ -20,6 +20,22 @@
     --game-max-width: 500px;
 }
 
+body.light-mode {
+    --color-default: #ffffff;
+    --color-text: #000000;
+    --color-text-dark: #ffffff;
+    --color-tone-1: #000000;
+    --color-tone-2: #d3d6da;
+    --color-tone-3: #878a8c;
+    --color-tone-4: #d3d6da;
+    /* lighter gray for borders */
+    --color-tone-5: #edeff1;
+    --color-tone-6: #f6f7f8;
+    --color-tone-7: #ffffff;
+    --color-absent: #787c7e;
+    --opacity-50: rgba(0, 0, 0, 0.5);
+}
+
 * {
     box-sizing: border-box;
 }
