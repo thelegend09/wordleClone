@@ -10,10 +10,10 @@
 </head>
 
 <body>
-    <div class="app-container">
+    <div class="app-container" x-data="wordleGame()" @keydown.window="handleKeydown($event)">
         <header>
             <div class="header-left">
-                <button id="help-btn" class="icon-btn" aria-label="Aide">
+                <button id="help-btn" class="icon-btn" aria-label="Aide" @click="showHelp = true">
                     <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24">
                         <path fill="currentColor"
                             d="M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8 8 8zm0-14c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4z">
@@ -23,14 +23,14 @@
             </div>
             <h1>LE WORDLE</h1>
             <div class="header-right" style="position: relative; z-index: 10;">
-                <button id="theme-btn" class="icon-btn" aria-label="Changer le thème">
+                <button id="theme-btn" class="icon-btn" aria-label="Changer le thème" @click="toggleTheme">
                     <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24">
                         <path fill="currentColor"
                             d="M20 8.69V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69zM12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6zm0-10c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4z">
                         </path>
                     </svg>
                 </button>
-                <button id="stats-btn" class="icon-btn" aria-label="Statistiques">
+                <button id="stats-btn" class="icon-btn" aria-label="Statistiques" @click="showStats = true">
                     <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24">
                         <path fill="currentColor"
                             d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"></path>
@@ -39,24 +39,80 @@
             </div>
         </header>
 
+        <div class="replay-container" x-show="gameOver" x-transition.opacity style="display: none;">
+            <div class="target-word-display">
+                <span style="font-size: 0.9rem; color: var(--color-tone-2);">Le mot était:</span>
+                <span x-text="targetWord" style="font-weight: 800; font-size: 1.2rem; margin-left: 5px;"></span>
+            </div>
+            <button class="icon-text-btn" @click="initGame()">
+                <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 0 24 24" width="20">
+                    <path fill="currentColor"
+                        d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z" />
+                </svg>
+                <span>REJOUER</span>
+            </button>
+        </div>
+
         <main>
-            <div id="game-board" class="game-board"></div>
+            <div id="game-board" class="game-board">
+                <template x-for="(row, rowIndex) in board" :key="rowIndex">
+                    <div class="row" :class="{ 'shake': row.shake }">
+                        <template x-for="(tile, tileIndex) in row.tiles" :key="tileIndex">
+                            <div class="tile" :class="{ 'pop': tile.pop, 'flip': tile.flip }" :data-state="tile.state"
+                                x-text="tile.letter"></div>
+                        </template>
+                    </div>
+                </template>
+            </div>
         </main>
 
-        <div id="message-container"></div>
+        <div id="message-container">
+            <template x-for="msg in messages" :key="msg.id">
+                <div class="message" :class="{ 'fade-out': msg.fadeOut }" x-text="msg.text"></div>
+            </template>
+        </div>
 
         <div class="keyboard-container">
-            <div class="keyboard" id="keyboard"></div>
+            <div class="keyboard" id="keyboard">
+                <template x-for="row in keyboardLayout">
+                    <div class="keyboard-row">
+                        <template x-for="key in row">
+                            <button class="key" :class="{ 'large': key === 'Enter' || key === 'Delete' }"
+                                :data-key="key" :data-state="keyStates[key] || ''" @click="handleInput(key)">
+                                <template x-if="key === 'Delete'">
+                                    <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"
+                                        data-testid="icon-backspace">
+                                        <path fill="currentColor"
+                                            d="M22 3H7c-.69 0-1.23.35-1.59.88L0 12l5.41 8.11c.36.53.9.89 1.59.89h15c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-3 12.59L17.59 17 14 13.41 10.41 17 9 15.59 12.59 12 9 8.41 10.41 7 14 10.59 17.59 7 19 8.41 15.41 12 19 15.59z">
+                                        </path>
+                                    </svg>
+                                </template>
+                                <template x-if="key === 'Enter'">
+                                    <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"
+                                        data-testid="icon-return">
+                                        <path fill="currentColor"
+                                            d="M19 7v4H5.83l3.58-3.59L8 6l-6 6 6 6 1.41-1.41L5.83 13H21V7z"></path>
+                                    </svg>
+                                </template>
+                                <template x-if="key !== 'Delete' && key !== 'Enter'">
+                                    <span x-text="key"></span>
+                                </template>
+                            </button>
+                        </template>
+                    </div>
+                </template>
+            </div>
         </div>
     </div>
 
     <!-- Help Modal -->
-    <div id="help-modal" class="modal hidden">
-        <div class="modal-content">
-            <button class="close-btn help-close-btn">&times;</button>
+    <div id="help-modal" class="modal" x-show="showHelp" style="display: none;" x-transition.opacity>
+        <div class="modal-content" @click.outside="showHelp = false">
+            <button class="close-btn help-close-btn" @click="showHelp = false">&times;</button>
             <h2>COMMENT JOUER</h2>
             <div class="rules-content">
                 <p>Devinez le <strong>MOT CACHÉ</strong> en 6 essais.</p>
+                <!-- ... content preserved ... -->
                 <p>Chaque essai doit être un mot valide de 5 lettres.</p>
                 <p>Le mot peut être :</p>
                 <ul>
@@ -103,33 +159,34 @@
     </div>
 
     <!-- Stats Modal -->
-    <div id="stats-modal" class="modal hidden">
-        <div class="modal-content">
-            <button class="close-btn stats-close-btn">&times;</button>
+    <div id="stats-modal" class="modal" x-show="showStats" style="display: none;" x-transition.opacity>
+        <div class="modal-content" @click.outside="showStats = false">
+            <button class="close-btn stats-close-btn" @click="showStats = false">&times;</button>
             <h2>STATISTIQUES</h2>
 
             <div id="stats-grid">
                 <div class="stat-box">
-                    <div id="games-played" class="stat-value">0</div>
+                    <div class="stat-value" x-text="stats.gamesPlayed">0</div>
                     <div class="stat-label">Jouées</div>
                 </div>
                 <div class="stat-box">
-                    <div id="win-pct" class="stat-value">0</div>
+                    <div class="stat-value" x-text="winPercentage">0</div>
                     <div class="stat-label">% Victoires</div>
                 </div>
                 <div class="stat-box">
-                    <div id="current-streak" class="stat-value">0</div>
+                    <div class="stat-value" x-text="stats.currentStreak">0</div>
                     <div class="stat-label">Série</div>
                 </div>
             </div>
 
-            <div class="next-game-section">
-                <button id="play-again-btn" class="primary-btn">REJOUER</button>
+            <div class="next-game-section" x-show="gameOver">
+                <button id="play-again-btn" class="primary-btn" @click="initGame()">REJOUER</button>
             </div>
         </div>
     </div>
 
     <script src="words.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js" defer></script>
     <script src="game.js"></script>
 </body>
 

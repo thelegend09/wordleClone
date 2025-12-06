@@ -418,6 +418,41 @@ main {
     transition: opacity 0.5s;
 }
 
-.message.fade-out {
-    opacity: 0;
+
+.icon-text-btn {
+    background: none;
+    border: 1px solid var(--color-tone-3);
+    color: var(--color-tone-1);
+    cursor: pointer;
+    padding: 8px 16px;
+    border-radius: 20px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-stack);
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: background-color 0.2s;
+}
+
+.icon-text-btn:hover {
+    background-color: var(--color-tone-5);
+}
+
+.icon-text-btn svg {
+    margin-right: 4px;
+}
+
+.replay-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    padding: 10px 0;
+    text-align: center;
+}
+
+.target-word-display {
+    display: flex;
+    align-items: baseline;
 }
