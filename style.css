@@ -289,8 +289,8 @@ main {
     position: fixed;
     top: 0;
     left: 0;
-    width: 100dvw !important;
-    height: 100dvh !important;
+    width: 90dvw !important;
+    height: 90dvh !important;
     background-color: rgba(0, 0, 0, 0.7);
     z-index: 1000;
     display: flex;
