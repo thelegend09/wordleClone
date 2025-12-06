@@ -26,9 +26,24 @@ let stats = {
 };
 
 document.addEventListener("DOMContentLoaded", () => {
-    loadSettings();
-    loadStats();
-    initGame();
+    try {
+        loadSettings();
+    } catch (e) {
+        console.error("Error loading settings:", e);
+    }
+
+    try {
+        loadStats();
+    } catch (e) {
+        console.error("Error loading stats:", e);
+    }
+
+    try {
+        initGame();
+    } catch (e) {
+        console.error("Error initializing game:", e);
+    }
+
     setupKeyboard();
     setupEventListeners();
 });
@@ -277,9 +292,15 @@ function handleLoss() {
 }
 
 function loadStats() {
-    const saved = localStorage.getItem("wordle-fr-stats");
-    if (saved) {
-        stats = JSON.parse(saved);
+    try {
+        const saved = localStorage.getItem("wordle-fr-stats");
+        if (saved) {
+            stats = JSON.parse(saved);
+        }
+    } catch (e) {
+        console.error("Failed to load stats, resetting:", e);
+        // Optional: clear bad data
+        // localStorage.removeItem("wordle-fr-stats");
     }
 }
 
