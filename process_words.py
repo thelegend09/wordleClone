@@ -9,7 +9,50 @@ def remove_accents(input_str):
     return "".join([c for c in nfkd_form if not unicodedata.combining(c)])
 
 def is_likely_proper_noun(word):
-    # Heuristic: mostly already lowercase in file, but just in case
+    # Common French proper nouns (names, cities, countries) to filter out
+    # This list is manually curated based on common entries found in dictionaries
+    proper_nouns = {
+        # Cities (France & World)
+        "paris", "lyon", "brest", "nancy", "lille", "metz", "rouen", "tours", "reims", "caen", 
+        "dijon", "nimes", "arles", "evron", "melun", "naves", "nesle", "oiron", "royan", "sedan",
+        "tulle", "ugine", "ussel", "yenne", "allos", "cluse", "dinan", "ernee", "isola", "trets",
+        "tunis", "dubai", "tokyo", "milan", "vaduz", "sofia", "osaka", "turku", "dacca", "hanoi",
+        "kyoto", "doha", "lima", "oslo", "riga", "rome", "seoul", "bern", 
+        
+        # Countries / Regions / Demonyms
+        "italy", "chine", "grece", "japon", "maroc", "suede", "suisse", "syrie", "tchad", "yemen",
+        "perse", "indes", "galles", "exode", "tibet", "nepal", "texas", "maine", 
+        "kanak", "tutsi", "slave", "sarde", "maure", "kurde", "latino", "khmer", "azteque", "incas",
+        
+        # Names (Female)
+        "alice", "chloe", "clara", "elena", "julia", "livia", "maeva", "sarah", "sofia", "adele",
+        "ambre", "anais", "annie", "anouk", "marie", "leila", "lydie", "laure", "linda", "paola",
+        "katia", "sonya", "helen", "greta", "sandy", "nancy", "lucie", "julie", "celia", "diane",
+        "fanny", "flora", "manon", "ninon", "tanya", "kelly", "joyce", "eliza", "daisy", "cathy",
+        "betty", "alida", "aglae", "irene", "edith", "ester", "agathe", "jeanne", "louise",
+        
+        # Names (Male)
+        "angel", "bruno", "denis", "emile", "ethan", "felix", "henri", "james", "jules", "louis",
+        "lucas", "nolan", "aaron", "david", "kevin", "steve", "serge", "cyril", "jason", "johan",
+        "marco", "mateo", "oscar", "sacha", "simon", "teddy", "timon", "tommy", "willy", "yanis",
+        "brian", "cedric", "damien", "dylan", "edwin", "frank", "gilles", "hervé", "jerry", "jimmy",
+        "jonas", "keith", "larry", "maud", "mulan", "peter", "ralph", "robin", "ruben", "samuel",
+        "tanguy", "terry", "walter", "wayne", "xavier", "yves", "alain", "boris", "colin", 
+        
+        # Mythology / Religion
+        "allah", "jesus", "judas", "moise", "noel", "paques", "satan", "venus", "zeus", "hades", "thor",
+        "shiva", "brahma", "vishnu", "buddha", "christ", "islam", "coran", "bible", "torah", "vada",
+        
+        # Misc Proper Nouns
+        "pepsi", "coke", "fanta", "apple", "google", "linux", "skype", "twitter", "yahoo", "zoile",
+        "boeing", "airbus", "nasa", "esa", "nato", "otan", "unesco",
+        "navel", "diesel", "caddie", "scotch", "frigo", "karcher", "klaxon", "sopalin", "velux", "postit"
+    }
+    
+    # Check strict match
+    if word in proper_nouns:
+        return True
+        
     return False
 
 def is_likely_plural_or_conjugated(word):
@@ -47,6 +90,9 @@ def main():
             normalized_word = remove_accents(word)
             
             if len(normalized_word) != 5:
+                continue
+                
+            if is_likely_proper_noun(normalized_word):
                 continue
             
             # Now using normalized word for everything
