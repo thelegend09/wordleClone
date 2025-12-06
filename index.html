@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Le Wordle - Wordle en Français</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="app-container">
+        <header>
+            <div class="header-left">
+                <button id="help-btn" class="icon-btn" aria-label="Aide">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24">
+                        <path fill="currentColor"
+                            d="M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8 8 8zm0-14c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4z">
+                        </path>
+                    </svg>
+                </button>
+            </div>
+            <h1>LE WORDLE</h1>
+            <div class="header-right">
+                <button id="stats-btn" class="icon-btn" aria-label="Statistiques">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24">
+                        <path fill="currentColor"
+                            d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"></path>
+                    </svg>
+                </button>
+            </div>
+        </header>
+
+        <main>
+            <div id="game-board" class="game-board"></div>
+        </main>
+
+        <div id="message-container"></div>
+
+        <div class="keyboard-container">
+            <div class="keyboard" id="keyboard"></div>
+        </div>
+    </div>
+
+    <!-- Help Modal -->
+    <div id="help-modal" class="modal hidden">
+        <div class="modal-content">
+            <button class="close-btn help-close-btn">&times;</button>
+            <h2>COMMENT JOUER</h2>
+            <div class="rules-content">
+                <p>Devinez le <strong>MOT CACHÉ</strong> en 6 essais.</p>
+                <p>Chaque essai doit être un mot valide de 5 lettres.</p>
+                <p>Le mot peut être :</p>
+                <ul>
+                    <li>Un nom commun singulier</li>
+                    <li>Un adjectif (forme de base)</li>
+                    <li>Un verbe à l'infinitif</li>
+                </ul>
+                <p>Il n'y a pas de pluriels (pas de S à la fin) ni de verbes conjugués dans le mot caché.</p>
+                <p>Appuyez sur la touche entrée pour valider.</p>
+                <p>Après chaque essai, la couleur des tuiles changera pour vous montrer à quel point vous étiez proche
+                    du mot.</p>
+
+                <div class="examples">
+                    <h3>Exemples</h3>
+                    <div class="example-row">
+                        <div class="tile small-tile" data-state="correct">M</div>
+                        <div class="tile small-tile">E</div>
+                        <div class="tile small-tile">R</div>
+                        <div class="tile small-tile">C</div>
+                        <div class="tile small-tile">I</div>
+                    </div>
+                    <p>La lettre <strong>M</strong> est dans le mot et à la bonne place.</p>
+
+                    <div class="example-row">
+                        <div class="tile small-tile">C</div>
+                        <div class="tile small-tile" data-state="present">H</div>
+                        <div class="tile small-tile">I</div>
+                        <div class="tile small-tile">E</div>
+                        <div class="tile small-tile">N</div>
+                    </div>
+                    <p>La lettre <strong>H</strong> est dans le mot mais au mauvais endroit.</p>
+
+                    <div class="example-row">
+                        <div class="tile small-tile">T</div>
+                        <div class="tile small-tile">A</div>
+                        <div class="tile small-tile">P</div>
+                        <div class="tile small-tile">I</div>
+                        <div class="tile small-tile" data-state="absent">S</div>
+                    </div>
+                    <p>La lettre <strong>S</strong> n'est pas dans le mot.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Modal -->
+    <div id="stats-modal" class="modal hidden">
+        <div class="modal-content">
+            <button class="close-btn stats-close-btn">&times;</button>
+            <h2>STATISTIQUES</h2>
+
+            <div id="stats-grid">
+                <div class="stat-box">
+                    <div id="games-played" class="stat-value">0</div>
+                    <div class="stat-label">Jouées</div>
+                </div>
+                <div class="stat-box">
+                    <div id="win-pct" class="stat-value">0</div>
+                    <div class="stat-label">% Victoires</div>
+                </div>
+                <div class="stat-box">
+                    <div id="current-streak" class="stat-value">0</div>
+                    <div class="stat-label">Série</div>
+                </div>
+            </div>
+
+            <div class="next-game-section">
+                <button id="play-again-btn" class="primary-btn">REJOUER</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="words.js"></script>
+    <script src="game.js"></script>
+</body>
+
+</html>
