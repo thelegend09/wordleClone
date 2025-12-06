@@ -1,5 +1,12 @@
 
 import json
+import unicodedata
+
+def remove_accents(input_str):
+    # Handle ligatures manually
+    input_str = input_str.replace('œ', 'oe').replace('æ', 'ae')
+    nfkd_form = unicodedata.normalize('NFKD', input_str)
+    return "".join([c for c in nfkd_form if not unicodedata.combining(c)])
 
 def is_likely_proper_noun(word):
     # Heuristic: mostly already lowercase in file, but just in case
@@ -37,24 +44,16 @@ def main():
         target_words = []
         
         for word in words:
-            if len(word) != 5:
+            normalized_word = remove_accents(word)
+            
+            if len(normalized_word) != 5:
                 continue
             
-            # Allow only a-z and accented chars (which should be in utf-8)
-            # But converting accents to normal might be needed if we want strict [a-z]
-            # Wordle usually maps accents to base letters for input, but displays them?
-            # Or standard French Wordle keeps accents? 
-            # "Le Mot" keeps accents on keyboard or maps them? 
-            # For simplicity in this clone, let's normalize to no-accents for logic?
-            # Or keep accents? The user didn't specify. 
-            # Prompt: "French Wordle clone".
-            # Standard French wordles often handle accents by accepting the non-accented char.
-            # Let's keep accents in the word list for display, but logic might handle them.
+            # Now using normalized word for everything
+            valid_guesses.append(normalized_word)
             
-            valid_guesses.append(word)
-            
-            if not is_likely_plural_or_conjugated(word):
-                target_words.append(word)
+            if not is_likely_plural_or_conjugated(normalized_word):
+                target_words.append(normalized_word)
         
         # Remove duplicates
         valid_guesses = sorted(list(set(valid_guesses)))
