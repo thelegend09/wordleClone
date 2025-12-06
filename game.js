@@ -5,9 +5,9 @@ const FLIP_ANIMATION_DURATION = 500;
 const DANCE_ANIMATION_DURATION = 500;
 
 const keyboardLayout = [
-    ["A", "Z", "E", "R", "T", "Y", "U", "I", "O", "P"],
-    ["Q", "S", "D", "F", "G", "H", "J", "K", "L", "M"],
-    ["Enter", "W", "X", "C", "V", "B", "N", "Delete"]
+    ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P", "Delete"],
+    ["A", "S", "D", "F", "G", "H", "J", "K", "L", "Enter"],
+    ["Z", "X", "C", "V", "B", "N", "M"]
 ];
 
 let targetWord = "";
@@ -96,7 +96,7 @@ function setupKeyboard() {
 
         rowKeys.forEach(key => {
             const button = document.createElement("button");
-            button.textContent = key === "Delete" ? "⌫" : key;
+            button.textContent = key === "Delete" ? "⌫" : (key === "Enter" ? "↵" : key);
             button.dataset.key = key;
             button.className = "key";
             if (key === "Enter" || key === "Delete") {
