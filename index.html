@@ -58,7 +58,10 @@
                 <template x-for="(row, rowIndex) in board" :key="rowIndex">
                     <div class="row" :class="{ 'shake': row.shake }">
                         <template x-for="(tile, tileIndex) in row.tiles" :key="tileIndex">
-                            <div class="tile" :class="{ 'pop': tile.pop, 'flip': tile.flip }" :data-state="tile.state"
+                            <div class="tile" 
+                                :class="{ 'pop': tile.pop, 'flip': tile.flip, 'selected': rowIndex === guesses.length && tileIndex === focusedIndex && !gameOver }" 
+                                :data-state="tile.state"
+                                @click="selectTile(rowIndex, tileIndex)"
                                 x-text="tile.letter"></div>
                         </template>
                     </div>

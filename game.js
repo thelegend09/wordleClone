@@ -14,7 +14,8 @@ document.addEventListener('alpine:init', () => {
         // State
         targetWord: "",
         guesses: [], // Array of completed words
-        currentGuess: "",
+        currentGuess: [],
+        focusedIndex: 0,
         gameOver: false,
         animating: false,
 
@@ -47,7 +48,8 @@ document.addEventListener('alpine:init', () => {
             console.log("Target:", this.targetWord);
 
             this.guesses = [];
-            this.currentGuess = "";
+            this.currentGuess = Array(WORD_LENGTH).fill("");
+            this.focusedIndex = 0;
             this.gameOver = false;
             this.animating = false;
             this.showStats = false;
@@ -84,19 +86,34 @@ document.addEventListener('alpine:init', () => {
             if (key === "Enter") {
                 this.submitGuess();
             } else if (key === "Delete") {
-                if (this.currentGuess.length > 0) {
-                    this.currentGuess = this.currentGuess.slice(0, -1);
-                    this.updateBoardUI();
+                if (this.currentGuess[this.focusedIndex] !== "") {
+                    // If current tile has letter, clear it
+                    this.currentGuess[this.focusedIndex] = "";
+                } else if (this.focusedIndex > 0) {
+                    // If current empty, move back and clear previous
+                    this.focusedIndex--;
+                    this.currentGuess[this.focusedIndex] = "";
                 }
+                this.updateBoardUI();
             } else {
-                if (this.currentGuess.length < WORD_LENGTH) {
-                    this.currentGuess += key;
-                    this.updateBoardUI(true); // true for pop animation on last char
+                // Letter input
+                this.currentGuess[this.focusedIndex] = key;
+                this.updateBoardUI(this.focusedIndex);
+
+                // Advance cursor if not at end
+                if (this.focusedIndex < WORD_LENGTH - 1) {
+                    this.focusedIndex++;
                 }
             }
         },
 
-        updateBoardUI(popLast = false) {
+        selectTile(rowIndex, tileIndex) {
+            if (rowIndex === this.guesses.length && !this.gameOver) {
+                this.focusedIndex = tileIndex;
+            }
+        },
+
+        updateBoardUI(popIndex = -1) {
             const rowIndex = this.guesses.length;
             const row = this.board[rowIndex];
 
@@ -105,7 +122,7 @@ document.addEventListener('alpine:init', () => {
                 row.tiles[i].letter = char;
                 row.tiles[i].state = char ? "active" : "empty";
 
-                if (popLast && i === this.currentGuess.length - 1) {
+                if (popIndex === i) {
                     row.tiles[i].pop = true;
                     setTimeout(() => { row.tiles[i].pop = false; }, 100);
                 }
@@ -113,20 +130,21 @@ document.addEventListener('alpine:init', () => {
         },
 
         submitGuess() {
-            if (this.currentGuess.length !== WORD_LENGTH) {
+            const guessStr = this.currentGuess.join("");
+            if (guessStr.length !== WORD_LENGTH || this.currentGuess.includes("")) {
                 this.showMessage("Pas assez de lettres");
                 this.shakeRow();
                 return;
             }
 
-            const guessLower = this.currentGuess.toLowerCase();
+            const guessLower = guessStr.toLowerCase();
             if (!VALID_GUESSES.includes(guessLower) && !TARGET_WORDS.includes(guessLower)) {
                 this.showMessage("Ce mot n'est pas dans la liste");
                 this.shakeRow();
                 return;
             }
 
-            this.evaluateGuess();
+            this.evaluateGuess(guessStr);
         },
 
         shakeRow() {
@@ -137,9 +155,9 @@ document.addEventListener('alpine:init', () => {
             }, 500);
         },
 
-        evaluateGuess() {
+        evaluateGuess(guessStr) {
             this.animating = true;
-            const guess = this.currentGuess.toLowerCase();
+            const guess = guessStr.toLowerCase();
             const targetLetters = this.targetWord.split("");
             const guessLetters = guess.split("");
             const result = new Array(WORD_LENGTH).fill("absent");
@@ -195,7 +213,8 @@ document.addEventListener('alpine:init', () => {
                 } else if (this.guesses.length === MAX_GUESSES) {
                     this.handleLoss();
                 } else {
-                    this.currentGuess = "";
+                    this.currentGuess = Array(WORD_LENGTH).fill("");
+                    this.focusedIndex = 0;
                     this.animating = false;
                 }
             }, WORD_LENGTH * 250);

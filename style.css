@@ -142,6 +142,10 @@ main {
     border: 2px solid var(--color-tone-2);
 }
 
+.tile.selected {
+    border-color: var(--color-tone-1);
+}
+
 .tile[data-state='correct'] {
     background-color: var(--color-correct);
     border-color: var(--color-correct);
@@ -285,8 +289,8 @@ main {
     position: fixed;
     top: 0;
     left: 0;
-    width: 100dvw;
-    height: 100dvh;
+    width: 100dvw !important;
+    height: 100dvh !important;
     background-color: rgba(0, 0, 0, 0.7);
     z-index: 1000;
     display: flex;
