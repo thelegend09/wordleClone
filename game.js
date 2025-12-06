@@ -6,9 +6,9 @@ document.addEventListener('alpine:init', () => {
     Alpine.data('wordleGame', () => ({
         // Constants needing access in template
         keyboardLayout: [
-            ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P", "Delete"],
-            ["A", "S", "D", "F", "G", "H", "J", "K", "L", "Enter"],
-            ["Z", "X", "C", "V", "B", "N", "M"]
+            ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"],
+            ["A", "S", "D", "F", "G", "H", "J", "K", "L"],
+            ["Enter", "Z", "X", "C", "V", "B", "N", "M", "Delete"]
         ],
 
         // State

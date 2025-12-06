@@ -9,8 +9,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
 </head>
 
-<body>
-    <div class="app-container" x-data="wordleGame()" @keydown.window="handleKeydown($event)">
+<body x-data="wordleGame()" @keydown.window="handleKeydown($event)">
+    <div class="app-container">
         <header>
             <div class="header-left">
                 <button id="help-btn" class="icon-btn" aria-label="Aide" @click="showHelp = true">
