@@ -47,6 +47,8 @@ body {
     margin: 0;
     padding: 0;
     height: 100vh;
+    height: 100dvh;
+    /* Use dynamic viewport height for mobile */
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -94,6 +96,10 @@ main {
     justify-content: center;
     align-items: center;
     padding: 10px;
+    overflow: hidden;
+    /* Ensure content doesn't push bounds */
+    min-height: 0;
+    /* Allow shrinking in flex container */
 }
 
 .game-board {
@@ -102,7 +108,11 @@ main {
     grid-gap: 5px;
     width: 100%;
     max-width: 350px;
+    max-height: 100%;
+    /* Constrain to available vertical space */
     aspect-ratio: 5 / 6;
+    margin: auto;
+    /* Center in available space */
 }
 
 .row {
