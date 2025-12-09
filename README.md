@@ -25,7 +25,7 @@ Le projet est organisé comme suit :
 
 La qualité de la liste de mots est cruciale pour un bon clone de Wordle. Voici comment nous avons obtenu et nettoyé les données :
 
-1.  **Source** : Dictionnaire français open-source de LibreOffice (Hunspell `fr_FR.dic`).
+1.  **Source** : Dictionnaire français open-source de LibreOffice (Hunspell `fr_FR.dic`). Ici: https://github.com/wachin/libreoffice-dictionaries-collection/blob/main/dicts/dict-fr/fr.dic
 2.  **Extraction** : Le script `extract_from_libreoffice.py` lit le fichier binaire `.dic`, extrait tous les mots, et ne conserve que ceux de 5 lettres. Il gère également l'expansion des ligatures (par exemple, "cœur" devient "coeur").
 3.  **Filtrage Intelligent** : Le script `smart_filter.py` applique des règles strictes pour nettoyer la liste :
     *   Suppression des noms propres (mots commençant par une majuscule).
@@ -33,7 +33,7 @@ La qualité de la liste de mots est cruciale pour un bon clone de Wordle. Voici 
 4.  **Validation Orthographique** : Une validation finale est effectuée à l'aide de la bibliothèque `pyenchant` (basée sur Hunspell) pour s'assurer que chaque mot conservé est bien un mot français valide reconnu.
 5.  **Normalisation** : Pour le jeu, tous les accents sont retirés (`é` devient `e`), permettant de jouer avec un clavier standard sans se soucier des caractères spéciaux.
 
-Le résultat final est une liste propre de **2 841** mots communs, stockée dans `words_smart_filtered.js`.
+Le résultat final est une liste propre de mots communs, stockée dans `words_smart_filtered.js`.
 
 ## 🛠️ Génération de la liste (pour les développeurs)
 
