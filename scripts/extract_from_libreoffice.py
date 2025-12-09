@@ -163,11 +163,19 @@ class LibreOfficeExtractor:
 
         return expanded
 
-    def save_to_file(self, filename='../data/french_words_raw.txt'):
+    def save_to_file(self, filename=None):
         """Save extracted words to file"""
+        if filename is None:
+            # Save to data directory relative to script
+            filename = Path(__file__).parent.parent / "data" / "french_words_raw.txt"
+
         print(f"\n💾 Saving to {filename}...")
 
         try:
+            filename = Path(filename)
+            # Ensure parent directory exists
+            filename.parent.mkdir(parents=True, exist_ok=True)
+
             with open(filename, 'w', encoding='utf-8') as f:
                 for word in sorted(self.words):
                     f.write(word + '\n')
