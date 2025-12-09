@@ -32,14 +32,17 @@ class SmartFilterV2:
             self.spellchecker = enchant.Dict("fr_FR")
             print("✅ French spell-checker loaded (enchant)")
             return True
-        except ImportError:
-            print("⚠️  enchant not installed")
-            print("   Install: pip install pyenchant")
+        except Exception as e:
+            print(f"⚠️  Spell-checker validation disabled: {e}")
+            print("   (Running with heuristics only)")
             self.spellchecker = None
             return False
 
-    def load_words(self, filename='../data/french_words_raw.txt'):
+    def load_words(self, filename=None):
         """Load raw words from file"""
+        if filename is None:
+            filename = Path(__file__).parent.parent / "data" / "french_words_raw.txt"
+        
         print(f"\n📖 Loading words from {filename}...")
 
         if not Path(filename).exists():
@@ -231,8 +234,11 @@ class SmartFilterV2:
 
         print("\n" + "="*70)
 
-    def generate_js(self, filename='../words_smart_filtered.js'):
+    def generate_js(self, filename=None):
         """Generates the JavaScript file for the game"""
+        if filename is None:
+            filename = Path(__file__).parent.parent / "words_smart_filtered.js"
+
         print(f"\n💾 Generating JavaScript file: {filename}...")
 
         words_sorted = sorted(self.words_accepted)
@@ -260,8 +266,11 @@ class SmartFilterV2:
             print(f"❌ Error generating JS: {e}")
             return False
 
-    def save_rejected_words(self, filename='../data/words_rejected.txt'):
+    def save_rejected_words(self, filename=None):
         """Save rejected words to file for review"""
+        if filename is None:
+            filename = Path(__file__).parent.parent / "data" / "words_rejected.txt"
+
         print(f"\n💾 Saving rejected words to: {filename}...")
 
         try:
@@ -276,8 +285,11 @@ class SmartFilterV2:
             print(f"❌ Error saving rejected words: {e}")
             return False
 
-    def save_validated_words(self, filename='../data/words_spellcheck_validated.txt'):
+    def save_validated_words(self, filename=None):
         """Save spell-check validated words for review"""
+        if filename is None:
+            filename = Path(__file__).parent.parent / "data" / "words_spellcheck_validated.txt"
+
         print(f"\n💾 Saving spell-check validated words to: {filename}...")
 
         try:
