@@ -6,6 +6,7 @@ Finds fr_FR.dic automatically and extracts 5-letter words
 
 import os
 import sys
+import re
 from pathlib import Path
 from collections import defaultdict
 
@@ -112,7 +113,7 @@ class LibreOfficeExtractor:
                     print(f"   Progress: {processed:,} lines, {len(self.words):,} words")
 
                 # Hunspell format: word/tags
-                word = line.strip().split('/')[0].lower()
+                word = line.strip().split('/')[0]
 
                 if word and len(word) >= 1:
                     self.words.add(word)
@@ -147,6 +148,34 @@ class LibreOfficeExtractor:
 
         print(f"✅ Found {len(self.words):,} five-letter words (ligatures expanded)")
         return True
+
+
+    def filter_out_capitalized(self):
+        """Filter out capitalized words"""
+        print(f"\n🔤 Filtering out capitalized words...")
+
+        filtered = {word for word in self.words if not word[0].isupper()}
+        self.stats['capitalized_filtered'] = len(self.words) - len(filtered)
+        self.words = filtered
+
+        print(f"✅ Found {self.stats['capitalized_filtered']:,} capitalized words")
+        return True
+
+    def remove_roman_numerals(self):
+        """Remove Roman numerals from words"""
+        print(f"\n🔤 Removing Roman numerals...")
+        filtered = {word for word in self.words if not self._contains_roman_numerals(word)}
+        self.stats['roman_numerals_removed'] = len(self.words) - len(filtered)
+        self.words = filtered
+        print(f"✅ Found {self.stats['roman_numerals_removed']:,} words with Roman numerals")
+        return True
+
+    def _contains_roman_numerals(self, word: str) -> bool:
+        """Check if word contains Roman numerals (I, V, X, L, C, D, M in sequence)"""
+        # Pattern for Roman numerals: sequences of I, V, X, L, C, D, M
+        # Must be at least 2 characters to avoid single letters
+        roman_pattern = r'[IVXLCDMivxlcdm]{2,}'
+        return bool(re.search(roman_pattern, word))
 
     def _expand_ligatures(self, word: str) -> str:
         """Expand French ligatures to their multi-character forms"""
@@ -216,6 +245,12 @@ class LibreOfficeExtractor:
             return False
 
         if not self.filter_5letter_words():
+            return False
+
+        if not self.filter_out_capitalized():
+            return False
+
+        if not self.remove_roman_numerals():
             return False
 
         self.print_stats()
